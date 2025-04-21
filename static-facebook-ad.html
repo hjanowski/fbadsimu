@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTO Pacific Facebook Ad Simulation</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            line-height: 1.34;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .facebook-header {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 8px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .facebook-logo {
+            background-color: #1877f2;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .search-box {
+            background-color: #f0f2f5;
+            border-radius: 50px;
+            padding: 8px 16px;
+            margin-left: 10px;
+            width: 240px;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Main content */
+        .main-content {
+            display: flex;
+            padding-top: 20px;
+        }
+        
+        .sidebar {
+            width: 300px;
+            padding-right: 20px;
+        }
+        
+        .newsfeed {
+            flex: 1;
+            max-width: 600px;
+        }
+        
+        .right-sidebar {
+            width: 300px;
+            padding-left: 20px;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar, .right-sidebar {
+                display: none;
+            }
+            
+            .newsfeed {
+                margin: 0 auto;
+            }
+        }
+        
+        /* Sidebar navigation */
+        .sidebar-nav {
+            margin-top: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-item:hover {
+            background-color: #e4e6eb;
+        }
+        
+        .nav-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1877f2;
+        }
+        
+        /* Post card */
+        .post-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+        }
+        
+        .post-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .author-name {
+            font-weight: 600;
+        }
+        
+        .post-meta {
+            color: #65676b;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-meta .dot {
+            margin: 0 4px;
+        }
+        
+        .sponsored-tag {
+            color: #65676b;
+            font-size: 13px;
+        }
+        
+        .post-options {
+            color: #65676b;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .post-content {
+            padding: 0 16px 12px;
+        }
+        
+        .post-text {
+            margin-bottom: 12px;
+        }
+        
+        /* NTO Pacific Ad Styles */
+        .nto-ad-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background-color: #0a2c3c;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .nto-ad-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(10, 44, 60, 0.8), rgba(64, 191, 180, 0.7));
+            z-index: 1;
+        }
+        
+        .nto-ad-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+        }
+        
+        .nto-ad-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 2;
+            padding: 20px;
+        }
+        
+        .nto-ad-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .nto-ad-subtitle {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .nto-ad-discount {
+            background-color: white;
+            color: #0a2c3c;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .nto-ad-button {
+            background-color: #40bfb4;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        /* Post stats */
+        .post-stats {
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e4e6eb;
+            color: #65676b;
+            font-size: 14px;
+        }
+        
+        .likes {
+            display: flex;
+            align-items: center;
+        }
+        
+        .like-icon {
+            background-color: #1877f2;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-right: 5px;
+        }
+        
+        /* Post actions */
+        .post-actions {
+            display: flex;
+            padding: 4px;
+        }
+        
+        .action-button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            color: #65676b;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .action-button:hover {
+            background-color: #f0f2f5;
+        }
+        
+        .action-icon {
+            margin-right: 8px;
+        }
+        
+        /* Comment section */
+        .post-comments {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            margin-right: 8px;
+        }
+        
+        .comment-input {
+            flex: 1;
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 8px 12px;
+            position: relative;
+        }
+        
+        .comment-input-placeholder {
+            color: #65676b;
+        }
+        
+        .emoji {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #65676b;
+        }
+        
+        /* Right sidebar */
+        .sponsored-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .sponsored-header {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .sponsored-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .sponsored-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            background-color: #e4e6eb;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        
+        .sponsored-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .sponsored-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .sponsored-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .sponsored-domain {
+            color: #65676b;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Facebook Header -->
+    <header class="facebook-header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center;">
+                    <div class="facebook-logo">f</div>
+                    <div class="search-box">Search Facebook</div>
+                </div>
+                <div class="header-icons">
+                    <div class="icon-circle">👤</div>
+                    <div class="icon-circle">☰</div>
+                    <div class="icon-circle">💬</div>
+                    <div class="icon-circle">🔔</div>
+                    <div class="icon-circle">▼</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main content -->
+    <main class="container">
+        <div class="main-content">
+            <!-- Left sidebar -->
+            <div class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="nav-item">
+                        <div class="nav-icon">👤</div>
+                        <span>Your Name</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">👥</div>
+                        <span>Friends</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">🏳️</div>
+                        <span>Pages</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon">🛍️</div>
+                        <span>Marketplace</span>
+                    </div>
+                </nav>
+            </div>
+            
+            <!-- News feed -->
+            <div class="newsfeed">
+                <!-- NTO Pacific Ad Post -->
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="author-avatar">
+                                <img src="https://picsum.photos/40/40?random=1" alt="NTO Pacific">
+                            </div>
+                            <div class="author-info">
+                                <div class="author-name">NTO Pacific</div>
+                                <div class="post-meta">
+                                    April 21 <span class="dot">•</span> <span class="sponsored-tag">Sponsored</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-options">⋯</div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <div class="post-text">
+                            🌊 <strong>SUMMER DIVE SPECIAL!</strong> Explore the depths with premium gear at special prices. Get 20% OFF all diving equipment for your summer adventures! Limited time offer.
+                        </div>
+                    </div>
+                    
+                    <!-- NTO Pacific Ad -->
+                    <a href="https://hjanowski.github.io/nto-pacific/index.html?utm_source=Facebook&utm_campaign=US_Midwest_Summer%20Vacation%20Season%20Offer_F24-45" target="_blank">
+                        <div class="nto-ad-container">
+                            <div class="nto-ad-overlay"></div>
+                            <img src="https://picsum.photos/600/400?random=2" alt="Diving equipment" class="nto-ad-image">
+                            <div class="nto-ad-content">
+                                <h2 class="nto-ad-title">Summer Dive Special</h2>
+                                <p class="nto-ad-subtitle">Professional diving equipment for every adventure</p>
+                                <div class="nto-ad-discount">SAVE 20%</div>
+                                <div class="nto-ad-button">Shop Now</div>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <div class="post-stats">
+                        <div class="likes">
+                            <div class="like-icon">👍</div>
+                            <span>342</span>
+                        </div>
+                        <div>
+                            <span>58 comments</span>
+                            <span class="dot">•</span>
+                            <span>24 shares</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <div class="action-button">
+                            <span class="action-icon">👍</span>
+                            <span>Like</span>
+                        </div>
+                        <div class="action-button">
+                            <span class="action-icon">💬</span>
+                            <span>Comment</span>
+                        </div>
+                        <div class="action-button">
+                            <span class="action-icon">↗️</span>
+                            <span>Share</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-comments">
+                        <div class="comment-avatar"></div>
+                        <div class="comment-input">
+                            <span class="comment-input-placeholder">Write a comment...</span>
+                            <span class="emoji">😊</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Regular post -->
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="author-avatar">
+                                <img src="https://picsum.photos/40/40?random=3" alt="Jane Smith">
+                            </div>
+                            <div class="author-info">
+                                <div class="author-name">Jane Smith</div>
+                                <div class="post-meta">
+                                    April 21 <span class="dot">•</span> <span>🌎</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-options">⋯</div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <div class="post-text">
+                            Just got back from an amazing trip to the beach! The water was perfect.
+                        </div>
+                    </div>
+                    
+                    <div class="post-stats">
+                        <div class="likes">
+                            <div class="like-icon">👍</div>
+                            <span>24</span>
+                        </div>
+                        <div>
+                            <span>3 comments</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <div class="action-button">
+                            <span class="action-icon">👍</span>
+                            <span>Like</span>
+                        </div>
+                        <div class="action-button">
+                            <span class="action-icon">💬</span>
+                            <span>Comment</span>
+                        </div>
+                        <div class="action-button">
+                            <span class="action-icon">↗️</span>
+                            <span>Share</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right sidebar -->
+            <div class="right-sidebar">
+                <div class="sponsored-section">
+                    <div class="sponsored-header">Sponsored</div>
+                    <div class="sponsored-item">
+                        <div class="sponsored-image">
+                            <img src="https://picsum.photos/120/120?random=4" alt="Summer styles">
+                        </div>
+                        <div class="sponsored-info">
+                            <div class="sponsored-title">Shop the latest summer styles</div>
+                            <div class="sponsored-domain">shopname.com</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sponsored-section">
+                    <div class="sponsored-header">Your Pages</div>
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #e4e6eb; margin-right: 8px;"></div>
+                        <span style="font-size: 14px;">Your Business Page</span>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 10px; color: #65676b; font-size: 14px;">
+                        <span style="margin-right: 8px;">🔔</span>
+                        <span>3 Notifications</span>
+                    </div>
+                    <div style="display: flex; align-items: center; color: #65676b; font-size: 14px;">
+                        <span style="margin-right: 8px;">🛍️</span>
+                        <span>Create Promotion</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
